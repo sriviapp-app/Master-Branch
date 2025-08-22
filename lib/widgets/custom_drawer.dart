@@ -11,7 +11,8 @@ class CustomDrawer extends StatelessWidget {
     final name = await storage.read(key: "name");
     final phone = await storage.read(key: "phone");
     final email = await storage.read(key: "email");
-    return {"name": name, "phone": phone, "email": email};
+    final city = await storage.read(key: "city");
+    return {"name": name, "phone": phone, "email": email , "city":city};
   }
 
 
@@ -79,7 +80,8 @@ class CustomDrawer extends StatelessWidget {
                       builder: (context, snapshot) {
                         final name = snapshot.data?["name"] ?? "User";
                         final phone = snapshot.data?["phone"] ?? "";
-                        final email = snapshot.data?["email"] ?? "";
+                        final email = snapshot.data?["email"] ?? ".....@gmail.com";
+                        final city = snapshot.data?["city"] ?? "City";
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,6 +102,11 @@ class CustomDrawer extends StatelessWidget {
                             if (email.isNotEmpty)
                               Text(
                                 email,
+                                style: const TextStyle(color: Colors.white70, fontSize: 18),
+                              ),
+                            if (city.isNotEmpty)
+                              Text(
+                                city,
                                 style: const TextStyle(color: Colors.white70, fontSize: 18),
                               ),
                           ],

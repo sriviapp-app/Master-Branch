@@ -7,7 +7,7 @@ import 'package:namma_srivi/widgets/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 import 'tab2_screen.dart';
-import 'tab3_screen.dart';
+import 'LocalNewsScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [HomeTab(), Tab2Screen(), Tab3Screen()];
+  final List<Widget> _screens = const [HomeTab(), Tab2Screen(), LocalNewsScreen()];
 
   @override
   void initState() {
@@ -90,13 +90,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],
                 ),
-                label: 'Orders',
+                label: 'Tea shop orders',
               ),
               BottomNavigationBarItem(
                 icon: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.person),
+                    const Icon(Icons.newspaper),
                     if (_currentIndex == 2)
                       Container(
                         margin: const EdgeInsets.only(top: 4),
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],
                 ),
-                label: 'Profile',
+                label: 'News',
               ),
             ],
           ),
