@@ -1,8 +1,10 @@
-# namma_srivi
+\# namma_srivi
 
 A new Flutter project.
 
 ## Getting Started
+
+## This is the app only to help nearby people to find out the nearest stores and call driver help
 
 This project is a starting point for a Flutter application.
 
