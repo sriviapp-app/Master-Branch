@@ -19,105 +19,149 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [HomeTab(), Tab2Screen(), LocalNewsScreen()];
+  // Maintain a history stack for tabs
+  final List<int> _tabHistory = [];
+
+  final List<Widget> _screens = const [
+    HomeTab(),
+    Tab2Screen(),
+    LocalNewsScreen(),
+  ];
 
   @override
   void initState() {
     super.initState();
+    _tabHistory.add(0); // default tab
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+    Future<bool> _onWillPop() async {
+      if (_currentIndex != 0) {
+        // Not on Home tab → go to previous tab
+        setState(() {
+          _tabHistory.removeLast();          // remove current tab
+          _currentIndex = _tabHistory.last;  // go to previous tab
+        });
+        return false; // prevent app from closing
+      } else {
+        // On Home tab → show exit dialog
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Exit App"),
+            content: const Text("Are you sure you want to exit?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => SystemNavigator.pop(),
+                child: const Text("Yes"),
+              ),
+            ],
+          ),
+        );
+        return result ?? false;
+      }
+  }
+
+  void _onTabTapped(int index) {
+    if (index != _currentIndex) {
+      setState(() {
+        _currentIndex = index;
+        _tabHistory.add(index); // add to history
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const CustomDrawer(),
-      appBar: gradientAppBar("Own APP"),
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(gradient: kAppGradient),
-        child: SafeArea(
-          top: false,
-          child: BottomNavigationBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white,
-            selectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return WillPopScope(
+      onWillPop: _onWillPop, // handle back button globally
+      child: Scaffold(
+        drawer: const CustomDrawer(),
+        appBar: gradientAppBar("Own APP"),
+        body: IndexedStack(index: _currentIndex, children: _screens),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(gradient: kAppGradient),
+          child: SafeArea(
+            top: false,
+            child: BottomNavigationBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _currentIndex,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white,
+              onTap: _onTabTapped,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.home),
+                      if (_currentIndex == 0)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          height: 4,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                    ],
+                  ),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.list),
+                      if (_currentIndex == 1)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          height: 4,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                    ],
+                  ),
+                  label: 'Tea shop orders',
+                ),
+                BottomNavigationBarItem(
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.newspaper),
+                      if (_currentIndex == 2)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          height: 4,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                    ],
+                  ),
+                  label: 'News',
+                ),
+              ],
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontWeight: FontWeight.normal,
-              color: Colors.white70,
-            ),
-            onTap: (i) => setState(() => _currentIndex = i),
-            items: [
-              BottomNavigationBarItem(
-                icon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.home),
-                    if (_currentIndex == 0)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        height: 4,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                  ],
-                ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.list),
-                    if (_currentIndex == 1)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        height: 4,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                  ],
-                ),
-                label: 'Tea shop orders',
-              ),
-              BottomNavigationBarItem(
-                icon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.newspaper),
-                    if (_currentIndex == 2)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        height: 4,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                  ],
-                ),
-                label: 'News',
-              ),
-            ],
           ),
         ),
       ),
     );
   }
 }
+
 
 // ---------------- Home Tab ----------------
 class HomeTab extends StatelessWidget {

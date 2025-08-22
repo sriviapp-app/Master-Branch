@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import './Screens/home_screen.dart';
 import './Screens/splash_screen.dart';
 
@@ -44,8 +44,45 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.white70,
         ),
       ),
-      home: const SplashScreen(),
-      routes: {'/home': (_) => const HomeScreen()},
+      home: const GlobalBackButtonHandler(
+        child: SplashScreen(), // Wrap your root screen here
+      ),
+      routes: {'/home': (_) => const GlobalBackButtonHandler(child: HomeScreen())},
     );
   }
 }
+
+class GlobalBackButtonHandler extends StatelessWidget {
+  final Widget child;
+  const GlobalBackButtonHandler({super.key, required this.child});
+
+  Future<bool> _onWillPop(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Exit App"),
+        content: const Text("Are you sure you want to exit?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // No
+            child: const Text("No"),
+          ),
+          TextButton(
+            onPressed: () => SystemNavigator.pop(), // Yes → close app
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => _onWillPop(context),
+      child: child,
+    );
+  }
+}
+
