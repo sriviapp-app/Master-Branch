@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_currentIndex == 0)
                       Container(
                         margin: const EdgeInsets.only(top: 4),
-                        height: 3,
+                        height: 4,
                         width: 20,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_currentIndex == 1)
                       Container(
                         margin: const EdgeInsets.only(top: 4),
-                        height: 3,
+                        height: 4,
                         width: 20,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_currentIndex == 2)
                       Container(
                         margin: const EdgeInsets.only(top: 4),
-                        height: 3,
+                        height: 4,
                         width: 20,
                         decoration: BoxDecoration(
                           color: Colors.white,

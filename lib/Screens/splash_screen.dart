@@ -95,6 +95,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Save securely
     await _storage.write(key: "email", value: email);
     await _storage.write(key: "mobile", value: mobile);
+    await _storage.write(key: "name", value: name);
+    await _storage.write(key: "city", value: city);
 
     // Navigate to Home
     Navigator.pushReplacementNamed(context, '/home');
