@@ -6,6 +6,7 @@ import 'package:namma_srivi/app_theme.dart';
 import 'package:namma_srivi/widgets/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
+import 'order_screen.dart';
 import 'tab2_screen.dart';
 import 'LocalNewsScreen.dart';
 
@@ -33,6 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _tabHistory.add(0); // default tab
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showWelcomeBottomSheet(context);
+    });
   }
 
     Future<bool> _onWillPop() async {
@@ -162,6 +167,63 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+void _showWelcomeBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: true,
+    isScrollControlled: true, // <-- important
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    backgroundColor: Colors.white,
+    builder: (context) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Welcome to the App!",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Explore Palkova orders and other features. Start ordering now!",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Colors.orangeAccent,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: Text("Start Ordering"),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
 
 // ---------------- Home Tab ----------------
 class HomeTab extends StatelessWidget {
@@ -191,6 +253,12 @@ class HomeTab extends StatelessWidget {
           final data = buttons[index];
           return OutlinedButton(
             onPressed: () {
+              if (data["label"] == "Order") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const OrderScreen()),
+                );
+              }
               if (data["label"] == "Driver Support") {
                 _showDriverSupportDialog(context);
               }

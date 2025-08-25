@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 // Premium gradient colors
-const Color kPrimaryColor = Color(0xFF3A8DFF); // Blue
-const Color kSecondaryColor = Color(0xFF6C63FF); // Purple
+const Color kPrimaryColor = Color(0xFFFFF3E0); // Blue
+const Color kSecondaryColor = Color(0xFFFFE0B2); // Purple
 
 const LinearGradient kAppGradient = LinearGradient(
   colors: [kPrimaryColor, kSecondaryColor],
