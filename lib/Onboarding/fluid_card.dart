@@ -4,18 +4,20 @@ class FluidCard extends StatelessWidget {
   final Color color;
   final Color altColor;
   final String bgImage;
+  final String? topImage; // 👈 new: path for image above title
   final String? title;
   final String? subtitle;
-  final Widget? child; // 👈 new
+  final Widget? child;
 
   const FluidCard({
     super.key,
     required this.color,
     required this.altColor,
     required this.bgImage,
+    this.topImage,
     this.title,
     this.subtitle,
-    this.child, // 👈 new
+    this.child,
   });
 
   @override
@@ -33,6 +35,14 @@ class FluidCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (topImage != null) ...[
+                  Image.asset(
+                    topImage!,
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 if (title != null && title!.isNotEmpty)
                   Text(
                     title!,

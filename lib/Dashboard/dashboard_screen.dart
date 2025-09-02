@@ -3,11 +3,13 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:namma_srivi/Dashboard/explore_screen.dart';
 import 'package:namma_srivi/app_theme.dart';
 import 'package:namma_srivi/widgets/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
-
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'order_screen.dart';
 import 'tab2_screen.dart';
 import 'LocalNewsScreen.dart';
@@ -33,10 +35,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _tabHistory.add(0);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    var cont = context;
+    _checkAndShowPopup(cont);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showWelcomeBottomSheet(context);
-    });
   }
 
   Future<bool> _onWillPop() async {
@@ -80,7 +81,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        drawer: const CustomDrawer(),
+        drawer: CustomDrawer(),
         appBar: AppTheme().gradientAppBar(context, "Own APP"),
         body: IndexedStack(
           index: _currentIndex,
@@ -130,61 +131,87 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ------------------- Welcome Bottom Sheet -------------------
-  void _showWelcomeBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      backgroundColor: Colors.white,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 5,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+}
+
+Future<void> _checkAndShowPopup(BuildContext buildContext) async {
+  //final prefs = await SharedPreferences.getInstance();
+  final prefs = const FlutterSecureStorage();
+  final String? loginResponse = await prefs.read(key: "loginResponse");
+ // final String? loginResponse = prefs.getString("loginResponse");
+
+  if (loginResponse != null) {
+    final data = jsonDecode(loginResponse);
+    final content = data["content"];
+
+    if (content["showPopup"] == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showWelcomeBottomSheet(buildContext, content["popupContent"]);
+      });
+
+      // update showPopup flag and save back
+      content["showPopup"] = false;
+      data["content"] = content;
+      prefs.write(key: "loginResponse", value: jsonEncode(data));
+    }
+  }
+}
+
+
+void _showWelcomeBottomSheet(BuildContext context, Map popupContent) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    backgroundColor: Colors.white,
+    builder: (context) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Welcome to the App!",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Explore Palkova orders and other features. Start ordering now!",
+              ),
+              const SizedBox(height: 16),
+
+              // ✅ Show Image or Text based on popupContent
+              if (popupContent["showImage"] == true)
+                Image.network(popupContent["imageURL"], height: 150),
+              if (popupContent["showText"] == true)
+                Text(
+                  popupContent["textContent"],
+                  style: const TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    backgroundColor: Colors.orangeAccent,
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    child: Text("Start Ordering"),
-                  ),
+
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Colors.orangeAccent,
                 ),
-              ],
-            ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: Text("Got it"),
+                ),
+              ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 }
 
 // ---------------------- Home Tab + Carousel -----------------------
@@ -241,7 +268,7 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(viewportFraction: 0.85);
+    _controller = PageController(viewportFraction: 1);
 
     _timer = Timer.periodic(const Duration(seconds: 6), (_) {
       if (_currentPage < widget.images.length - 1) {
@@ -298,8 +325,8 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
                             fit: BoxFit.cover, width: double.infinity),
                       ),
                       Positioned(
-                        right: 16,
-                        bottom: 16,
+                        right: 10,
+                        bottom: 75,
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: const BoxDecoration(
