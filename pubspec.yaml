@@ -37,6 +37,8 @@ dependencies:
   shared_preferences: ^2.5.3
   cloud_firestore: ^5.6.0   # for Google Cloud storage (Firestore)
   firebase_core: ^3.6.0
+  liquid_swipe: ^3.1.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -97,3 +99,22 @@ flutter:
 
   assets:
     - assets/temple.jpg
+    - images/Bg-Blue.png
+    - images/Bg-Red.png
+    - images/Bg-Yellow.png
+    - images/Illustration-Blue.png
+    - images/Illustration-Red.png
+    - images/Illustration-Yellow.png
+    - images/Moon-Crescent.png
+    - images/Need help.png
+    - images/Order Now.png
+    - images/Places Temple.png
+    - images/Slider-Blue.png
+    - images/Slider-Red.png
+    - images/Slider-Yellow.png
+    - images/Sun-Red.png
+    - images/Sun-Yellow.png
+    - images/Temple.jpg
+    - images/Temple_Nearby.png
+    - images/milk palkova.jpg
+    - images/palkova.jpg

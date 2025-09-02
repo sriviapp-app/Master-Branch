@@ -51,6 +51,8 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     final top = MediaQuery.of(context).padding.top;
     final bottom = MediaQuery.of(context).padding.bottom;
 
@@ -65,13 +67,13 @@ class CustomDrawer extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(16, top + 12, 16, 16),
-              decoration: const BoxDecoration(gradient: kAppGradient),
+              decoration: BoxDecoration(gradient: isDark ? AppTheme.darkGradient : AppTheme.lightGradient),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 24,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 28, color: kPrimaryColor),
+                    child: Icon(Icons.person, size: 28, color: isDark ? Colors.white :Colors.black),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
