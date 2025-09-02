@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color lightPrimary = Color(0xFF6757ED);   // Cyan-Blue
   static const Color lightSecondary = Color(0xFF9575CD); // Blue-Purple
-  static const Color lightAccent = Color(0xFFFFD54F);    // Vibrant Purple
+  static const Color lightAccent = Color(0xFFE3F2FD);    // Vibrant Purple
   static const Color lightBackground = Color(0xFFE3F2FD); // Very light bluish background
 
 // Dark mode (deep & premium)

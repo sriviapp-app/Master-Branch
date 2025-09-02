@@ -1,8 +1,9 @@
+// dashboard_screen.dart
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:namma_srivi/Dashboard/explore_screen.dart';
 import 'package:namma_srivi/app_theme.dart';
 import 'package:namma_srivi/widgets/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
@@ -10,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'order_screen.dart';
 import 'tab2_screen.dart';
 import 'LocalNewsScreen.dart';
-//import 'dashboard_details_screen.dart'; // screen to open when clicking carousel card
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -99,65 +99,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               unselectedItemColor: Colors.white,
               onTap: _onTabTapped,
               items: [
-                BottomNavigationBarItem(
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.home),
-                      if (_currentIndex == 0)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          height: 4,
-                          width: 20,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2)),
-                        ),
-                    ],
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.list),
-                      if (_currentIndex == 1)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          height: 4,
-                          width: 20,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2)),
-                        ),
-                    ],
-                  ),
-                  label: 'Tea shop orders',
-                ),
-                BottomNavigationBarItem(
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.newspaper),
-                      if (_currentIndex == 2)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          height: 4,
-                          width: 20,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2)),
-                        ),
-                    ],
-                  ),
-                  label: 'News',
-                ),
+                _navItem(Icons.home, "Home", 0),
+                _navItem(Icons.list, "Tea shop orders", 1),
+                _navItem(Icons.newspaper, "News", 2),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _navItem(IconData icon, String label, int index) {
+    return BottomNavigationBarItem(
+      icon: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon),
+          if (_currentIndex == index)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 4,
+              width: 20,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(2)),
+            ),
+        ],
+      ),
+      label: label,
     );
   }
 
@@ -209,7 +178,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Text("Start Ordering"),
                   ),
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -233,11 +201,11 @@ class HomeTabWithCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Function()> callbacks = [
           () => Navigator.push(context,
-          MaterialPageRoute(builder: (_) => OrderScreen()/*DashboardDetailsScreen(1)*/)),
+          MaterialPageRoute(builder: (_) => const ExploreSriviScreen())),
           () => Navigator.push(context,
-          MaterialPageRoute(builder: (_) =>  OrderScreen()/*DashboardDetailsScreen(2)*/)),
+          MaterialPageRoute(builder: (_) => const OrderScreen())),
           () => Navigator.push(context,
-          MaterialPageRoute(builder: (_) =>  OrderScreen()/*DashboardDetailsScreen(3)*/)),
+          MaterialPageRoute(builder: (_) => const OrderScreen())),
     ];
 
     return SingleChildScrollView(
@@ -273,9 +241,9 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(viewportFraction: 0.8);
+    _controller = PageController(viewportFraction: 0.85);
 
-    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 6), (_) {
       if (_currentPage < widget.images.length - 1) {
         _currentPage++;
       } else {
@@ -301,31 +269,31 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 220,
           child: PageView.builder(
             controller: _controller,
             itemCount: widget.images.length,
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: index < widget.onTapCallbacks.length
-                    ? widget.onTapCallbacks[index]
-                    : null,
+                onTap: widget.onTapCallbacks[index],
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3))
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 6),
+                      )
                     ],
                   ),
                   child: Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(18),
                         child: Image.asset(widget.images[index],
                             fit: BoxFit.cover, width: double.infinity),
                       ),
@@ -333,13 +301,13 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
                         right: 16,
                         bottom: 16,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
+                            gradient: AppTheme.lightGradient,
                           ),
                           child: const Icon(Icons.arrow_forward,
-                              color: Colors.white, size: 20),
+                              color: Colors.white, size: 22),
                         ),
                       ),
                     ],
@@ -349,19 +317,20 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
             },
           ),
         ),
-        const SizedBox(height: 8),
-        // Dot indicators
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(widget.images.length, (index) {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentPage == index ? 12 : 8,
-              height: _currentPage == index ? 12 : 8,
+              width: _currentPage == index ? 14 : 8,
+              height: 8,
               decoration: BoxDecoration(
-                color: _currentPage == index ? Colors.deepPurple : Colors.grey,
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(8),
+                color: _currentPage == index
+                    ? Colors.deepPurple
+                    : Colors.grey[400],
               ),
             );
           }),
@@ -370,7 +339,6 @@ class _PremiumCarouselState extends State<PremiumCarousel> {
     );
   }
 }
-
 
 // ---------------------- Original HomeTab -----------------------
 class HomeTab extends StatelessWidget {
@@ -382,8 +350,6 @@ class HomeTab extends StatelessWidget {
       {"icon": Icons.shopping_cart, "label": "Order"},
       {"icon": Icons.support_agent, "label": "Driver Support"},
       {"icon": Icons.help, "label": "Ask Query"},
-      {"icon": Icons.history, "label": "Order History"},
-      {"icon": Icons.notifications, "label": "Notifications"},
       {"icon": Icons.settings, "label": "Settings"},
     ];
 
@@ -394,8 +360,8 @@ class HomeTab extends StatelessWidget {
         shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          crossAxisSpacing: 18,
+          mainAxisSpacing: 18,
         ),
         itemCount: buttons.length,
         itemBuilder: (context, index) {
@@ -429,7 +395,8 @@ class HomeTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GradientIcon(data["icon"], size: 30, gradient: AppTheme.lightGradient),
+                GradientIcon(data["icon"],
+                    size: 30, gradient: AppTheme.lightGradient),
                 const SizedBox(height: 8),
                 Text(data["label"], textAlign: TextAlign.center),
               ],
@@ -505,7 +472,8 @@ class HomeTab extends StatelessWidget {
     required String label,
     IconData? icon,
     required VoidCallback onTap,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+    EdgeInsetsGeometry padding =
+    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
     double radius = 12,
   }) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -550,12 +518,14 @@ class GradientIcon extends StatelessWidget {
   final double size;
   final Gradient gradient;
 
-  const GradientIcon(this.icon, {super.key, this.size = 24, required this.gradient});
+  const GradientIcon(this.icon,
+      {super.key, this.size = 24, required this.gradient});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => gradient.createShader(Rect.fromLTWH(0, 0, size, size)),
+      shaderCallback: (bounds) =>
+          gradient.createShader(Rect.fromLTWH(0, 0, size, size)),
       child: SizedBox(
         width: size,
         height: size,
